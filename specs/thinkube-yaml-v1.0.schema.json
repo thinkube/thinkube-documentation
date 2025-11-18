@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://thinkube.io/schemas/thinkube-yaml-v1.0.json",
+  "title": "ThinkubeDeployment",
+  "description": "Schema for thinkube.yaml deployment descriptor",
+  "type": "object",
+  "required": ["apiVersion", "kind", "spec"],
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "enum": ["thinkube.io/v1"],
+      "description": "API version"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["ThinkubeDeployment"],
+      "description": "Resource kind"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Application name",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$|^\\{\\{\\s*project_name\\s*\\}\\}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "spec": {
+      "type": "object",
+      "required": ["containers"],
+      "properties": {
+        "containers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "build"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Container identifier",
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+              },
+              "build": {
+                "type": "string",
+                "description": "Build context path"
+              },
+              "port": {
+                "type": "integer",
+                "description": "Container port",
+                "minimum": 1,
+                "maximum": 65535
+              },
+              "size": {
+                "type": "string",
+                "description": "Resource allocation size",
+                "enum": ["small", "medium", "large", "xlarge"]
+              },
+              "schedule": {
+                "type": "string",
+                "description": "Cron expression for scheduled tasks"
+              },
+              "mounts": {
+                "type": "array",
+                "description": "Storage mounts",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+:/[a-zA-Z0-9/_-]+$"
+                }
+              },
+              "capabilities": {
+                "type": "array",
+                "description": "Container capabilities",
+                "items": {
+                  "type": "string",
+                  "enum": ["large-uploads"]
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "routes": {
+          "type": "array",
+          "description": "HTTP routing rules",
+          "items": {
+            "type": "object",
+            "required": ["path", "to"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "URL path",
+                "pattern": "^/"
+              },
+              "to": {
+                "type": "string",
+                "description": "Target container name"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "services": {
+          "type": "array",
+          "description": "Platform services required",
+          "items": {
+            "type": "string",
+            "pattern": "^(database|cache|storage|queue)(:[a-z0-9-]+)?$"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
