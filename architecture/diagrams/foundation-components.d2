@@ -1,0 +1,115 @@
+# Thinkube Foundation Components
+# The 6 critical components that most services depend on
+
+direction: down
+
+title: Foundation Components {
+  near: top-center
+  shape: text
+  style.font-size: 24
+  style.bold: true
+}
+
+# The 6 foundation components
+k8s: Canonical Kubernetes {
+  shape: hexagon
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+  style.font-size: 16
+  style.bold: true
+}
+
+ingress: Ingress Controller {
+  shape: hexagon
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+  style.font-size: 16
+  style.bold: true
+}
+
+acme: ACME Certificates {
+  shape: hexagon
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+  style.font-size: 16
+  style.bold: true
+}
+
+postgresql: PostgreSQL {
+  shape: hexagon
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+  style.font-size: 16
+  style.bold: true
+}
+
+keycloak: Keycloak {
+  shape: hexagon
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+  style.font-size: 16
+  style.bold: true
+}
+
+harbor: Harbor Registry {
+  shape: hexagon
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+  style.font-size: 16
+  style.bold: true
+}
+
+# Example dependent services
+services: "All Other Services\n(16 components)" {
+  shape: rectangle
+  style.fill: "#94A3B8"
+  style.stroke: "#64748B"
+  style.font-color: "#FFFFFF"
+}
+
+# Dependencies
+k8s -> ingress: provides
+k8s -> acme: runs on
+ingress -> acme: uses
+k8s -> postgresql: runs on
+ingress -> postgresql: exposes
+acme -> postgresql: secures
+
+postgresql -> keycloak: database
+ingress -> keycloak: exposes
+acme -> keycloak: secures
+
+postgresql -> harbor: database
+keycloak -> harbor: auth
+ingress -> harbor: exposes
+acme -> harbor: secures
+
+# Most services depend on these
+ingress -> services: networking
+acme -> services: TLS/SSL
+postgresql -> services: database\n(for some)
+keycloak -> services: authentication\n(for some)
+harbor -> services: container images\n(for some)
+
+note: |md
+  ## Critical Path
+
+  These 6 components form the foundation:
+  1. **k8s** - Everything runs here
+  2. **ingress** - Network access
+  3. **acme** - TLS certificates
+  4. **postgresql** - Shared database
+  5. **keycloak** - SSO authentication
+  6. **harbor** - Container registry
+
+  Most other services require 3-5 of these.
+| {
+  near: bottom-center
+  style.font-size: 14
+}

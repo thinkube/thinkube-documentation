@@ -1,0 +1,169 @@
+# Thinkube Complete Deployment Dependency Graph
+# All 30 components with dependencies shown
+
+direction: right
+
+# Phase 1: Initial Setup
+env-setup: Environment Setup
+python-setup: Python Setup
+github-cli: GitHub CLI
+zerotier: ZeroTier/Tailscale\n(optional)
+
+# Phase 2: Infrastructure
+k8s: Canonical Kubernetes {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+workers: K8s Workers\n(optional)
+gpu-operator: GPU Operator\n(optional)
+dns-server: DNS Server (BIND9) {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+coredns: CoreDNS {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+coredns-nodes: Configure Node DNS
+acme-certs: ACME Certificates {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+ingress: Ingress Controller {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+
+# Phase 3: Core Services - Foundation
+postgresql: PostgreSQL {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+keycloak: Keycloak {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+harbor: Harbor Registry {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+
+# Harbor Image Building
+harbor-mirror: Mirror Public Images
+harbor-base: Build Base Images
+harbor-jupyter: Build Jupyter Images
+harbor-codeserver: Build Code-Server Image
+
+# Storage
+seaweedfs: SeaweedFS {
+  style.fill: "#0D9488"
+  style.stroke: "#0F766E"
+  style.font-color: "#FFFFFF"
+}
+juicefs: JuiceFS
+
+# CI/CD
+argo-workflows: Argo Workflows
+argocd: ArgoCD
+
+# Development Tools
+devpi: DevPI
+gitea: Gitea
+code-server: Code-Server
+
+# ML/AI
+mlflow: MLflow
+jupyterhub: JupyterHub
+
+# Platform Management
+thinkube-control: Thinkube Control
+
+# Dependencies - Phase 1
+env-setup -> python-setup
+python-setup -> github-cli
+
+# Dependencies - Phase 2
+env-setup -> k8s
+python-setup -> k8s
+k8s -> workers
+k8s -> gpu-operator
+k8s -> dns-server
+dns-server -> coredns
+coredns -> coredns-nodes
+coredns -> acme-certs
+k8s -> acme-certs
+acme-certs -> ingress
+k8s -> ingress
+
+# Dependencies - Phase 3: Core Foundation
+k8s -> postgresql
+ingress -> postgresql
+acme-certs -> postgresql
+
+postgresql -> keycloak
+ingress -> keycloak
+acme-certs -> keycloak
+
+postgresql -> harbor
+keycloak -> harbor
+ingress -> harbor
+acme-certs -> harbor
+
+# Harbor image chain
+harbor -> harbor-mirror
+harbor-mirror -> harbor-base
+harbor-base -> harbor-jupyter
+harbor-base -> harbor-codeserver
+
+# Storage chain
+k8s -> seaweedfs
+seaweedfs -> juicefs
+postgresql -> juicefs
+
+# CI/CD
+k8s -> argo-workflows
+ingress -> argo-workflows
+acme-certs -> argo-workflows
+
+k8s -> argocd
+ingress -> argocd
+acme-certs -> argocd
+
+# Development tools
+k8s -> devpi
+ingress -> devpi
+acme-certs -> devpi
+
+postgresql -> gitea
+ingress -> gitea
+acme-certs -> gitea
+
+harbor -> code-server
+harbor-codeserver -> code-server
+ingress -> code-server
+acme-certs -> code-server
+
+# ML/AI
+postgresql -> mlflow
+ingress -> mlflow
+acme-certs -> mlflow
+
+harbor -> jupyterhub
+harbor-jupyter -> jupyterhub
+ingress -> jupyterhub
+acme-certs -> jupyterhub
+
+# Platform Management
+postgresql -> thinkube-control
+keycloak -> thinkube-control
+harbor -> thinkube-control
+ingress -> thinkube-control
+acme-certs -> thinkube-control
