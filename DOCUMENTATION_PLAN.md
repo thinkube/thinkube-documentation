@@ -241,41 +241,63 @@ with mlflow.start_run():
 - Service discovery (automatic environment variables)
 - Integration with: PostgreSQL, Valkey, Qdrant, Weaviate, OpenSearch, MLflow, SeaweedFS, LiteLLM, NATS, ClickHouse
 
-### 5. **Example: RAG Agent with Custom Fine-Tuned Model** (NEW - CRITICAL)
-**File**: `examples/rag-agent-with-fine-tuning.md`
+### 5. **Example: AI Research Lab Assistant with Fine-Tuning** (NEW - CRITICAL)
+**File**: `examples/ai-research-lab-assistant.md`
 
 **Content** - Complete end-to-end workflow:
 
-**Scenario**: Legal document Q&A agent with domain expertise
+**Scenario**: AI Research Lab Assistant for managing ML papers and experiments
 
-**Phase 1: Build RAG Agent Prototype**
+**What it does**:
+- Ingest and index ArXiv papers on ML/AI topics
+- Answer questions ("What are latest LoRA techniques?")
+- Summarize papers and extract key findings
+- Link papers to MLflow experiments
+- Multi-agent system for coordination
+
+**Phase 0: Platform Validation**
+- Notebook 00: Test all 7 platform services
+- Validate: LiteLLM, Qdrant, Langfuse, MLflow, PostgreSQL, Valkey, NATS
+- Document working connection patterns
+
+**Phase 1: Build RAG Prototype**
 - Use tk-jupyter-agent-dev
-- LangChain + Qdrant for RAG
-- Test with GPT-4 via LiteLLM
-- Cost: $0.03/1K tokens
+- Notebooks 01 (LangChain basics) + 04 (RAG pipeline)
+- LangChain + Qdrant for paper search
+- Deploy gpt-oss-20b via tkt-tensorrt-llm (TensorRT-LLM on DGX Spark)
+- Test with gpt-oss-20b local inference via LiteLLM
+- Cost: $0 (local inference, Blackwell GPUs)
 
-**Phase 2: Fine-Tune for Legal Domain**
+**Phase 2: Multi-Agent System**
+- Notebook 05 (CrewAI agents)
+- Paper Summarizer + Experiment Tracker + Insight Finder
+- NATS messaging for coordination
+- PostgreSQL for metadata, Valkey for caching
+
+**Phase 3: Fine-Tune for Research Domain**
 - Switch to tk-jupyter-fine-tuning image
-- Prepare dataset: legal Q&A pairs
-- Fine-tune Llama 3 8B with QLoRA
+- Prepare dataset: ML/AI research papers and Q&A
+- Fine-tune gpt-oss-20b (or Llama 3 8B) with QLoRA
 - Log experiments to MLflow
-- Evaluate: domain accuracy improves, cost drops
+- Evaluate: research terminology and summarization quality improves
 
-**Phase 3: Deploy Fine-Tuned Model**
+**Phase 4: Deploy Fine-Tuned Model**
 - Deploy via tkt-vllm-gradio or tkt-tensorrt-llm
 - Register in LiteLLM as local model
 - Cost: $0/query (local inference)
 
-**Phase 4: Update Agent to Use Fine-Tuned Model**
-- Modify agent to use local fine-tuned model
-- LiteLLM routing: local model → cloud fallback
+**Phase 5: Deploy Complete Application**
+- Use tkt-research-assistant template
+- Configure to use fine-tuned model via LiteLLM
+- LiteLLM routing: fine-tuned local → gpt-oss-20b base fallback
 - Monitor with Langfuse
 
 **Results**:
-- Domain accuracy: +25% (legal terminology understanding)
-- Cost: $0.03/1K → $0/1K (100% cost reduction)
-- Latency: Improved (local inference)
-- Privacy: Data never leaves platform
+- Domain accuracy: +30% (research terminology understanding)
+- Cost: $0 throughout (local inference on DGX Spark)
+- Latency: Optimized (TensorRT-LLM on Blackwell GPUs)
+- Privacy: Complete (all data stays local)
+- Immediately useful for ML research work
 
 **Complete working code for all phases**
 
@@ -298,9 +320,13 @@ with mlflow.start_run():
 3. **tkt-tensorrt-llm** - TensorRT-LLM for Blackwell GPUs
    - DGX Spark optimized
 4. **tkt-stable-diffusion** - Image generation
+5. **tkt-research-assistant** (🚧 BUILDING) - AI Research Lab Assistant
+   - RAG agent for ArXiv papers
+   - Multi-agent coordination
+   - MLflow experiment linking
 
-**Planned Agent Templates** (❌ NOT IMPLEMENTED):
-- tkt-rag-agent, tkt-tool-agent, tkt-multi-agent, tkt-agentic-workflow
+**Planned Agent Templates** (❌ NOT IMPLEMENTED YET):
+- tkt-tool-agent, tkt-multi-agent, tkt-agentic-workflow
 - See roadmap in keys_to_success/MISSING_PIECES.md
 
 **Using Templates**:
@@ -487,8 +513,8 @@ guides/
 └── cicd-deployment-workflow.md            ⭐⭐  (NEW)
 
 examples/
-├── rag-agent-with-fine-tuning.md          ⭐⭐⭐ (NEW - complete workflow)
-└── building-rag-agent.md                  ⭐⭐  (NEW - simpler, no fine-tuning)
+├── ai-research-lab-assistant.md           ⭐⭐⭐ (NEW - complete lifecycle with fine-tuning)
+└── platform-services-validation.md        ⭐⭐⭐ (NEW - Notebook 00 reference)
 
 architecture/
 └── platform-overview.md                   ⭐⭐  (UPDATE)
@@ -500,17 +526,20 @@ README.md                                   ⭐⭐  (UPDATE)
 
 ## IMPLEMENTATION PRIORITY
 
-**Week 1: Complete Lifecycle Documentation** (CRITICAL)
-1. AI Agent Development Lifecycle ⭐⭐⭐
-2. Fine-Tuning for Agents ⭐⭐⭐
-3. JupyterHub Images Guide ⭐⭐⭐
-4. RAG Agent with Fine-Tuning Example ⭐⭐⭐
+**Day 1: Platform Validation** (CRITICAL - DO FIRST!)
+0. Platform Services Validation (Notebook 00) ⭐⭐⭐
 
-**Week 2: Integration & Infrastructure** (HIGH)
-5. Platform Services Integration ⭐⭐
-6. Thinkube AI Lab Quickstart ⭐⭐
-7. Template System ⭐⭐
-8. CI/CD Workflow ⭐⭐
+**Week 1: Build Research Assistant + Document** (CRITICAL)
+1. Platform Services Integration Guide ⭐⭐⭐ (write while building Notebook 00)
+2. AI Research Lab Assistant Example ⭐⭐⭐ (document as we build notebooks 01, 04, 05)
+3. JupyterHub Images Guide ⭐⭐⭐
+4. Template System Guide ⭐⭐
+
+**Week 2: Fine-Tuning & Deployment** (HIGH)
+5. Fine-Tuning for Agents ⭐⭐
+6. AI Agent Development Lifecycle ⭐⭐
+7. CI/CD Workflow ⭐⭐
+8. Thinkube AI Lab Quickstart ⭐⭐
 
 **Week 3: Polish** (MEDIUM)
 9. Platform Overview Update ⭐
@@ -522,22 +551,36 @@ README.md                                   ⭐⭐  (UPDATE)
 
 **Documentation reflects complete agent lifecycle**:
 ✅ Shows Prototype → Fine-tune → Deploy → Observe → Optimize
+✅ Uses real application (AI Research Lab Assistant)
+✅ Validates all 7 platform services (Notebook 00)
 ✅ Explains fine-tuning as part of agent development
 ✅ Integrates MLflow for experiment tracking
-✅ Shows tk-jupyter-fine-tuning image and capabilities
-✅ Provides end-to-end examples with fine-tuning
+✅ Shows multi-agent coordination with NATS
+✅ Provides end-to-end working example
 
 **Developer can**:
-✅ Build agent prototype (tk-jupyter-agent-dev)
-✅ Fine-tune custom model (tk-jupyter-fine-tuning)
-✅ Deploy fine-tuned model (vLLM/TensorRT-LLM)
+✅ Validate platform services (Notebook 00)
+✅ Deploy gpt-oss-20b via TensorRT-LLM on DGX Spark
+✅ Build RAG agent prototype (Notebooks 01, 04)
+✅ Implement multi-agent system (Notebook 05)
+✅ Fine-tune gpt-oss-20b for research domain
+✅ Deploy fine-tuned model (TensorRT-LLM)
 ✅ Use fine-tuned model in agent (via LiteLLM)
 ✅ Track experiments (MLflow)
 ✅ Monitor in production (Langfuse)
-✅ Understand cost benefits ($0.03/1K → $0/1K)
+✅ Deploy via tkt-research-assistant template
+✅ Understand privacy and performance benefits (local inference)
+
+**Application works**:
+✅ Can ingest and index ArXiv papers
+✅ Answers research questions accurately
+✅ Multi-agent system coordinates properly
+✅ Links papers to MLflow experiments
+✅ Immediately useful for ML research
 
 **Strategic alignment**:
 ✅ Positions fine-tuning as competitive advantage
 ✅ Shows cost reduction through custom models
-✅ Emphasizes privacy (local fine-tuned models)
 ✅ Demonstrates complete agent development platform
+✅ Provides reproducible real-world example
+✅ Dogfooding (platform used to build research tool)
