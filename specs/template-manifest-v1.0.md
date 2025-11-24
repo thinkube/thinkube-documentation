@@ -121,6 +121,8 @@ Only add parameters that:
 ```
 
 #### choice - Selection (avoid when possible)
+
+Static choices:
 ```yaml
 - name: auth_provider
   type: choice
@@ -128,6 +130,23 @@ Only add parameters that:
   choices: ["keycloak", "auth0"]
   default: "keycloak"
 ```
+
+Dynamic choices from model catalog (for AI templates):
+```yaml
+- name: model_id
+  type: choice
+  description: Select a downloaded model
+  dynamic_source: "model_catalog"
+  filter:
+    server_type: "tensorrt"  # Optional: filter by server type
+    is_downloaded: true      # Optional: only show downloaded models
+  default: "nvidia/Phi-4-multimodal-instruct-FP4"
+```
+
+The `dynamic_source` field enables dynamic population of choices at deployment time:
+- `"model_catalog"`: Populates choices from downloaded models in the model catalog
+- `filter` object: Optional filters to apply (server_type, is_downloaded, etc.)
+- Choices are fetched when the deployment form loads
 
 ## Template Naming Convention
 
