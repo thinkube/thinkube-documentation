@@ -77,7 +77,7 @@ spec:
   - `small`: Basic web apps, microservices (256MB RAM)
   - `medium`: Standard applications (512MB RAM)
   - `large`: Resource-intensive apps (1GB RAM)
-  - `xlarge`: ML/AI workloads, LLMs (24GB RAM)
+  - `xlarge`: ML/AI workloads, LLMs (80GB RAM - for unified memory systems)
 
 ### spec.containers[].schedule
 - Cron expression for scheduled containers
